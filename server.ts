@@ -11,9 +11,9 @@ const port: number = process.env.PORT || 3000;
 
 // Mount the WelcomeController at the /welcome route
 app.use(express.static('views'));
-app.use('/nm', express.static(path.join(__dirname, '/node_modules')));
+app.use('/nm', express.static(path.join(__dirname, '../node_modules')));
 
-app.use('/dist', express.static(path.join(__dirname, '/dist')));
+app.use('/dist', express.static(path.join(__dirname, '../dist')));
 
 app.get('/', (req: Request, res: Response) => {
   res.render('index.html');
