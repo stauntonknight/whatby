@@ -1,0 +1,12 @@
+<div class="form-group main-panel container">
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <div class="searchbox">
+        <input class="form-control input-lg" (keyup.enter)="onsubmit(search.value)" type="search" #search placeholder="How old are you" />
+      </div>
+      <button type="submit" class="btn btn-primary submit" (click)="onsubmit(search.value)">Submit</button>
+      <div class="clear"></div>
+      <result-list [results]="results"></result-list>
+    </div>
+  </div>
+</div>
