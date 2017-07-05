@@ -9,6 +9,7 @@ var rename = require("gulp-rename");
 var streamify = require('gulp-streamify')
 var clean = require('gulp-clean');
 var source = require('vinyl-source-stream')
+var util = require('gulp-util');
 
 var tsProject = ts.createProject('tsconfig.json');
 
@@ -24,11 +25,11 @@ gulp.task('build', () => {
 
 gulp.task('browserify', ['build'], () => {
   var stream = browserify('build/src/main.js').bundle();
-  stream
-      .pipe(source('main.js'))
-      .pipe(streamify(uglify()))
-      .on('error', (err) => { console.log(err);})
-      .pipe(gulp.dest('dist'));
+  var src = stream.pipe(source('main.js'));
+  if (util.env.production) {
+    src = src.pipe(streamify(uglify()));
+  }
+  src.pipe(gulp.dest('dist'));
 });
 
 gulp.task('clean', () => {
