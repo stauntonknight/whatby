@@ -8,8 +8,8 @@ const app: express.Application = express();
 
 // The port the express app will listen on
 var port: number;
-if (process.env.port) {
-  port = Number(process.env.port);
+if (process.env.PORT) {
+  port = Number(process.env.PORT);
 } else {
   port = 3000;
 }
