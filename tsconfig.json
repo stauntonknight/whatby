@@ -10,6 +10,7 @@
     "experimentalDecorators": true
   },
   "exclude": [
+    "typings",
     "node_modules"
   ]
 }
