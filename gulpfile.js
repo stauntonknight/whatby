@@ -1,35 +1,38 @@
 var gulp = require('gulp');
 var ts = require('gulp-typescript');
 var watch = require('gulp-watch');
-var stylus = require('stylus');
 var inlineNg2Template = require('gulp-inline-ng2-template');
 var browserify = require('browserify')
+var buffer = require('vinyl-buffer');
+var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var rename = require("gulp-rename");
 var streamify = require('gulp-streamify')
 var clean = require('gulp-clean');
 var source = require('vinyl-source-stream')
 var util = require('gulp-util');
+var tsify = require('tsify');
 
 var tsProject = ts.createProject('tsconfig.json');
 
-gulp.task('build', () => {
-  var tsResult = tsProject.src().pipe(inlineNg2Template({
-    'base': 'src/app',
-    'styleProcessor': (path, extension, file, callback) => {
-      callback(null, stylus.render(file));
-    }
-  })).pipe(tsProject());
-  return tsResult.pipe(gulp.dest('build'));
-});
-
-gulp.task('browserify', ['build'], () => {
-  var stream = browserify('build/src/main.js').bundle();
+gulp.task('browserify', () => {
+  var stream = browserify({
+    entries: 'src/main.ts',
+    debug: !util.env.production
+  })
+    .plugin(tsify, {target : 'es5'})
+    .transform('./ng2inlinetransform')
+    .bundle();
   var src = stream.pipe(source('main.js'));
   if (util.env.production) {
     src = src.pipe(streamify(uglify()));
+  } else {
+    src = src
+      .pipe(buffer())
+      .pipe(sourcemaps.init({loadMaps: true}))
+      .pipe(sourcemaps.write('./'))
   }
-  src.pipe(gulp.dest('dist'));
+  src.pipe(gulp.dest('dist/'));
 });
 
 gulp.task('clean', () => {
