@@ -7,7 +7,12 @@ import * as path from "path";
 const app: express.Application = express();
 
 // The port the express app will listen on
-const port: number = process.env.PORT || 3000;
+var port: number;
+if (process.env.port) {
+  port = Number(process.env.port);
+} else {
+  port = 3000;
+}
 
 // Mount the WelcomeController at the /welcome route
 app.use(express.static("views"));

@@ -13,7 +13,6 @@ var source = require('vinyl-source-stream')
 var util = require('gulp-util');
 var tsify = require('tsify');
 
-var tsProject = ts.createProject('tsconfig.json');
 
 gulp.task('browserify', () => {
   var stream = browserify({
@@ -23,7 +22,7 @@ gulp.task('browserify', () => {
     .plugin(tsify, {target : 'es5'})
     .transform('./ng2inlinetransform')
     .bundle();
-  var src = stream.pipe(source('main.js'));
+  var src = stream.pipe(source('client.js'));
   if (util.env.production) {
     src = src.pipe(streamify(uglify()));
   } else {
@@ -36,11 +35,18 @@ gulp.task('browserify', () => {
 });
 
 gulp.task('clean', () => {
-  gulp.src('build', {read:false}).pipe(clean());
   gulp.src('dist', {read:false}).pipe(clean());
 });
 
-gulp.task('compile', ['browserify'], () => {
+gulp.task('build:server', () => {
+  var tsProject = ts.createProject('tsconfig.json');
+  var tsResult = gulp.src('server.ts').pipe(ts({
+    noImplicitAny: true,
+    skipLibCheck: true
+  })).pipe(gulp.dest('dist'));
+});
+
+gulp.task('compile', ['browserify', 'build:server'], () => {
   console.log('done');
 });
 
